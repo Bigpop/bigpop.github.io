@@ -362,7 +362,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-06 11:04:23" itemprop="dateModified" datetime="2022-01-06T11:04:23+08:00">2022-01-06</time>
+                <time title="修改时间：2022-01-24 16:32:23" itemprop="dateModified" datetime="2022-01-24T16:32:23+08:00">2022-01-24</time>
               </span>
 
           
@@ -399,7 +399,7 @@
 <p><img src="/2021/12/24/%E7%94%A8systemd%E7%AE%A1%E7%90%86%E6%9C%8D%E5%8A%A1/image-20211224174422781.png" alt="image-20211224174422781"></p>
 <p>操作步骤</p>
 <ol>
-<li><p>在/usr/lib/systemd/system中添加service配置文件mytest.service</p>
+<li><p>在/etc/systemd/system中添加service配置文件mytest.service</p>
  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">[UNIT]</span><br><span class="line"><span class="meta">#</span><span class="bash">服务描述</span></span><br><span class="line">Description=Browser Preview Service</span><br><span class="line"><span class="meta">#</span><span class="bash">指定了在systemd在执行完那些target之后再启动该服务</span></span><br><span class="line">After=network.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line"><span class="meta">#</span><span class="bash">定义Service的运行类型</span></span><br><span class="line">Type=simple</span><br><span class="line"><span class="meta">#</span><span class="bash">定义systemctl start|stop|reload *.service 的执行方法（具体命令需要写绝对路径）</span></span><br><span class="line"><span class="meta">#</span><span class="bash">ExecStartPre为启动前执行的命令</span></span><br><span class="line"><span class="meta">#</span><span class="bash">项目中有相对路径时要指定工作目录</span></span><br><span class="line">WorkingDirectory=/root/http_server </span><br><span class="line">ExecStart=/root/http_server/main 8090</span><br><span class="line">ExecReload=</span><br><span class="line"><span class="meta">#</span><span class="bash">MAINPID是systemd记录的主进程PID</span></span><br><span class="line">Restart=always</span><br><span class="line">ExecStop=/bin/kill -9 $&#123;MAINPID&#125; </span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line"><span class="meta">#</span><span class="bash">多用户</span></span><br><span class="line">WantedBy=multi-user.target</span><br></pre></td></tr></table></figure></li>
 <li><p>查看service状态</p>
  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl status mytest.service</span><br></pre></td></tr></table></figure></li>
