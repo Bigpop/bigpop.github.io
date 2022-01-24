@@ -119,7 +119,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">5</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">4</span></a>
 
   </li>
   </ul>
@@ -248,125 +248,6 @@
 <p>解决办法：在碰撞发生时通过object.GetInstanceID()，比较两个对象的id只有id更小的才能执行合并操作。</p>
 <p>2.A和B、C同时碰撞</p>
 <p><img src="/2022/01/24/unity%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/1581643009463_.pic_hd-3010748.jpg" alt="1581643009463_.pic_hd">        预期<img src="/2022/01/24/unity%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/1571643009462_.pic_hd-3010797.jpg" alt="1571643009462_.pic_hd">     实际<img src="/2022/01/24/unity%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/1561643009462_.pic_hd-3010819.jpg" alt="1561643009462_.pic_hd"></p>
-<p>问题描述：A和B、C同时碰撞生成了两个更大的对象，但预期是只能和其中一个发生碰撞合成一个更大的对象</p>
-<p>解决办法：使用static建立了一个hash，key为实例id，在合并前先查看实例是否存在。合并在该hash中移除相应实例id</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://bigpop.github.io/2022/01/24/unity/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/01/24/unity/" class="post-title-link" itemprop="url">unity学习总结</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-01-24 15:32:56 / 修改时间：15:40:49" itemprop="dateCreated datePublished" datetime="2022-01-24T15:32:56+08:00">2022-01-24</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>最近学了下Unity，先跟官方教程走了个3D碰撞球的小游戏的教程。然后实现了“合成同学小游戏“，借鉴合成大西瓜的游戏机制。</p>
-<h3 id="Unity介绍"><a href="#Unity介绍" class="headerlink" title="Unity介绍"></a>Unity介绍</h3><p>unity是一个游戏引擎，帮助快速开发游戏。个人觉得unity的一大优势是跨平台编译（虽然其它平台也可能有跨平台编译)，比如”合成同学小游戏“是2D休闲类游戏，第一需求是就是便捷性，因此web是最合适的平台。</p>
-<h3 id="Unity-WebGL编译"><a href="#Unity-WebGL编译" class="headerlink" title="Unity WebGL编译"></a>Unity WebGL编译</h3><p>unity WebGl编译可以直接产出js、data、css、html、wasm和图片使游戏可以直接运行在web端。</p>
-<p>在编译对象的时候有三种压缩方式br、gzip和不压缩。br是google提出的web内容压缩格式压缩率最高也是unity默认的格式。我摸索的上线模式就是把这些生成的内容以http文件传输的方式提供给客户端访问。既然br（Brotli）的压缩率最高自然而然就作为了第一选择，但我在使用过程中遇到了一些问题，最终选择了更稳定的gzip，下面讲一下具体原因。</p>
-<h5 id="safari使用不灵？使用br压缩方式遇到的问题"><a href="#safari使用不灵？使用br压缩方式遇到的问题" class="headerlink" title="safari使用不灵？使用br压缩方式遇到的问题"></a>safari使用不灵？使用br压缩方式遇到的问题</h5><p>因为上线服务的方式就是把编译出的js、data、css、html放到服务器服务，这些编译内容以index.html为核心组织，客户端GET domain:port/index.html后index.html中的js代码会在客户端浏览器执行对其它js、data、css资源进行GET请求。当所有内容正确在客户端载入时游戏就可以玩了。</p>
-<p>但对于内容的压缩格式，在http协议中要客户端和服务端要对压缩格式进行约定。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">客户端先发起请求在Header中添加：</span><br><span class="line">Accept-encoding：br, gz</span><br><span class="line">代表接受的压缩编码格式</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">服务端在返回的Header中添加：</span><br><span class="line">content-type：application/js    或其他的text/css</span><br><span class="line">Content-encoding: br</span><br></pre></td></tr></table></figure>
-
-<p>但我在使用python写了一版br http服务端代码后发现window上能正常运行，但在Safari上客户端的http请求Accept-encoding没有br),怀疑是兼容性问题，遂搁置问题转向gzip。</p>
-<blockquote>
-<p>   <a href="https://github.com/Bigpop/Unity-webGL-Server.git">https://github.com/Bigpop/Unity-webGL-Server.git</a></p>
-</blockquote>
-<h3 id="Unity-editor"><a href="#Unity-editor" class="headerlink" title="Unity editor"></a>Unity editor</h3><p>“下面来聊聊unity本身”</p>
-<p>unity editor本身由六大部分组成</p>
-<p><img src="/2022/01/24/unity/1591643009468_.pic_hd.jpg" alt="1591643009468_.pic_hd">1.hierarchy</p>
-<p>2.project</p>
-<p>3.console</p>
-<p>4.game</p>
-<p>5.scene</p>
-<p>6.inspector</p>
-<p>从游戏角度看组织结构如下：</p>
-<p>scene </p>
-<p>​    gameObject1</p>
-<p>​        component1（transform）</p>
-<p>​        component2（rigidbody）</p>
-<p>​        component3（collier）</p>
-<p>​        component4（C# script）</p>
-<p>​    gameObject2</p>
-<p>​    gameObject2</p>
-<h5 id="unity中的类和实例"><a href="#unity中的类和实例" class="headerlink" title="unity中的类和实例"></a>unity中的类和实例</h5><p>类和实例是在编程中一个常见的概念关于类和实例：</p>
-<p>1.在代码中通过Instantiate()函数实例化（Instantiate中传入的也是实例，Instantiate返回对该实例的拷贝）</p>
-<p>2.在unity中hierarchy中的内容都是实例，</p>
-<p>3.C#脚本中声明并在inspector中拖拽赋值的实例变量</p>
-<blockquote>
-<p>  此外GameObject是类，gameObject是实例</p>
-</blockquote>
-<h5 id="刚体和碰撞"><a href="#刚体和碰撞" class="headerlink" title="刚体和碰撞"></a>刚体和碰撞</h5><p>刚体（rigidbody）该component给游戏对象增加物理属性，如重力重量</p>
-<p>碰撞（collider）只有两个游戏对象都启动这个component时才会检测到碰撞，碰撞分为两类</p>
-<p>1.Collision，造成物理碰撞，可以在碰撞时执行OnCollision函数。</p>
-<p>​    OnTriggerEnter</p>
-<p>2.Trigger，取消所有物理碰撞，可以在碰撞时执行OnTrigger函数。</p>
-<p>​    OnTriggerEnter、OnTriggerStay、OnTriggerExit</p>
-<blockquote>
-<p>  这两种方式通过在inspector中点击is trigger切换</p>
-</blockquote>
-<h5 id="实例间的通信"><a href="#实例间的通信" class="headerlink" title="实例间的通信"></a>实例间的通信</h5><p>实例间的通信方法      </p>
-<p>1.A调用B的情况：          </p>
-<p>​    1.1 GameObject.Find(“B”)得到所有名为B的实例的脚本对象通过其访问函数进行访问          </p>
-<p>​    1.2 或者在Fruit脚本中增加 public Game；并将Game实例拖拽过去dd          </p>
-<p>​    1.3 将B中要调用的内容使用static预实例化</p>
-<p> 2.A实例内产生B的情况：           </p>
-<p>​    因为实例在脚本中instancelize 因此可以直接对该实例操作</p>
-<h5 id="遇到的其他问题"><a href="#遇到的其他问题" class="headerlink" title="遇到的其他问题"></a>遇到的其他问题</h5><p>1.对象碰撞逻辑重复执行导致陷入死循环</p>
-<p>问题描述：因为游戏逻辑是两个相同对象碰撞后合成一个更大的对象，但碰撞发生时两个对象都调用OnTriggerEnter2D分别产生的一个更大的对象，两个更大的对象又彼此碰撞无限循环</p>
-<p>解决办法：在碰撞发生时通过object.GetInstanceID()，比较两个对象的id只有id更小的才能执行合并操作。</p>
-<p>2.A和B、C同时碰撞</p>
-<p><img src="/2022/01/24/unity/1581643009463_.pic_hd.jpg" alt="1581643009463_.pic_hd">                 预期：<img src="/2022/01/24/unity/1571643009462_.pic_hd.jpg" alt="1571643009462_.pic_hd">              实际：<img src="/2022/01/24/unity/1561643009462_.pic_hd.jpg" alt="1561643009462_.pic_hd"></p>
 <p>问题描述：A和B、C同时碰撞生成了两个更大的对象，但预期是只能和其中一个发生碰撞合成一个更大的对象</p>
 <p>解决办法：使用static建立了一个hash，key为实例id，在合并前先查看实例是否存在。合并在该hash中移除相应实例id</p>
 
@@ -675,7 +556,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
